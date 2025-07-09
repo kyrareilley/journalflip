@@ -86,15 +86,26 @@ mid8_2.style.display = "none";
 
 
 document.addEventListener("mousewheel", function (e) {
-  position = position + e.deltaX;
+  position = parseInt(position + e.deltaX);
   position = min(1000, position);
   position = max(0, position);
 });
-document.addEventListener("mousewheel", function (e) {
-  document.preventDefault();
+/*
+document.addEventListener("mousewheel", function (ev) {
+  ev.preventDefault();
 });
+*/
+
+  let bar = document.getElementById("bar");
+  bar.addEventListener("dragstart", function (ev) {
+    ev.preventDefault();
+  })
+
+
+  //bar.addEventListener("mousedown", mouseDown);
 
 let position = 0;
+
 
 function reset_pages() {
   // ----- MAIN PAGES -----
@@ -139,12 +150,25 @@ function setup() {
 
 function draw() {
 //  background(242, 240, 237);
+
 background(255, 255, 255);
   noFill();
   stroke(0);
-  bar = rect(35, 500, 550, 10, 10);
+  holder = rect(35, 500, 550, 10, 10);
   fill(0);
-  bar = rect(35 + position / 2, 500, 50, 10, 10);
+  
+  if (position <= 0) {
+    bar.style.left = 35 + "px";
+  } else if (position >= 1000) {
+    bar.style.left = 535 + "px";
+  } else {
+    bar.style.left = (35 + position / 2) + "px";
+  }
+
+  //bar = rect(35 + position / 2, 500, 50, 10, 10);
+
+  bar.addEventListener("mousedown", mouseDown);
+
 
   // COVER
   if (position < 100) {
@@ -188,7 +212,6 @@ background(255, 255, 255);
   } else if (position >= 375 && position < 400) {
     reset_pages();
     mid3_2.style.display = "block";
-    bar = rect(234, 500, 50, 10, 10);
     // PAGE 4
   } else if (position >= 400 && position < 450) {
     reset_pages();
@@ -243,5 +266,38 @@ background(255, 255, 255);
   } else if (position >= 900) {
     reset_pages();
     page9.style.display = "block";
+
   }
+
+// MOUSEDOWN TO SCROLL
+
 }
+
+function mouseDown(e) {
+  startX = e.clientX;
+
+  document.addEventListener("mousemove", mouseMove);
+  document.addEventListener("mouseup", mouseUp);
+}
+
+function mouseMove(e) {
+  isDragging = true;
+
+  newX = startX - e.clientX;
+  deltaX = e.clientX;
+  
+ if (isDragging = true){
+  position = (bar.offsetLeft - newX);
+ }
+}
+
+function mouseUp(e) {
+  isDragging = false;
+  document.removeEventListener("mousemove", mouseMove);
+}
+
+
+
+
+
+
